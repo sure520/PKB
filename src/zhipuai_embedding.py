@@ -8,13 +8,13 @@ class ZhipuAIEmbeddings(Embeddings):
         api_key = os.getenv("ZHIPUAI_API_KEY")
         if not api_key:
             raise ValueError("ZHIPUAI_API_KEY not found in environment variables")
-        self.client = zhipuai.ZhipuAI(api_key=api_key)
+        zhipuai.api_key = api_key  # 直接设置全局变量
     
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         """将文档转换为向量"""
         embeddings = []
         for text in texts:
-            response = self.client.embeddings.create(
+            response = zhipuai.Embeddings.create(
                 model="embedding-2",
                 input=text
             )
@@ -26,7 +26,7 @@ class ZhipuAIEmbeddings(Embeddings):
     
     def embed_query(self, text: str) -> List[float]:
         """将查询转换为向量"""
-        response = self.client.embeddings.create(
+        response = zhipuai.Embeddings.create(
             model="embedding-2",
             input=text
         )
