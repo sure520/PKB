@@ -1,9 +1,28 @@
+# 环境变量文件
+.env
+.env.*
+!env.example
+
+# 临时文件夹
+temp_data/
+temp_vector_db/
 __pycache__/
 *.py[cod]
-*.class
-.env
-.venv
-env/
+*$py.class
+
+# 虚拟环境
 venv/
-.idea/
-.vscode/
+env/
+ENV/
+
+# 日志文件
+*.log
+
+# 缓存文件
+.streamlit/
+.cache/
+.pytest_cache/
+
+# 系统文件
+.DS_Store
+Thumbs.db
