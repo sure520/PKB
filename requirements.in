@@ -1,0 +1,32 @@
+# 核心依赖
+langchain==0.1.12
+langchain-community==0.0.28
+langchain-core==0.1.31
+langchain-text-splitters==0.0.1
+langchain-openai==0.0.5
+chromadb==0.4.24
+python-dotenv==1.0.1
+streamlit==1.31.1
+numpy==1.26.4
+zhipuai==2.1.5.20250106
+pandas==2.1.4
+
+# 文档处理
+pymupdf==1.23.8
+unstructured==0.11.2
+python-magic==0.4.27
+pypdf==4.1.0
+python-docx==1.1.0
+markdown==3.5.2
+beautifulsoup4==4.12.3
+
+# 请求处理
+urllib3==2.0.7
+
+# AI 模型
+openai==1.12.0
+deepseek-ai==0.0.1
+
+# 测试依赖
+pytest==8.0.0
+pytest-cov==4.1.0 
