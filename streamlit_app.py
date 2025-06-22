@@ -13,47 +13,58 @@ st.set_page_config(
 # 添加 src 目录到 Python 路径
 sys.path.append("./src")
 
-# 初始化会话状态
-if "chat_messages" not in st.session_state:
-    st.session_state["chat_messages"] = []
-if "documents_loaded" not in st.session_state:
-    st.session_state.documents_loaded = False
-if "app_initialized" not in st.session_state:
-    st.session_state.app_initialized = False
-if "initialization_error" not in st.session_state:
-    st.session_state.initialization_error = None
+# 初始化会话状态 - 需要更全面的初始化
+def initialize_session_state():
+    """初始化所有会话状态变量"""
+    session_state_keys = {
+        "chat_messages": [],
+        "documents_loaded": False,
+        "app_initialized": False,
+        "initialization_error": None,
+        "show_zhipu_key": False,
+        "zhipu_api_key": "",
+        "show_key": False,
+        "deepseek_api_key": "",
+        "documents": [],
+        "embedding": None,
+        "doc_processor": None,
+        "vector_store": None,
+        "search_manager": None,
+        "llm": None,
+        "condense_question_prompt": None,
+        "qa_prompt": None
+    }
+    
+    for key, default_value in session_state_keys.items():
+        if key not in st.session_state:
+            st.session_state[key] = default_value
+
+# 在页面配置之后立即初始化会话状态
+initialize_session_state()
 
 # 侧边栏：API Key输入、文档上传、重置聊天历史
 st.sidebar.title("设置")
 
 # 智谱API Key输入（支持明文/密文切换）
-if "show_zhipu_key" not in st.session_state:
-    st.session_state["show_zhipu_key"] = False
-if "zhipu_api_key" not in st.session_state:
-    st.session_state["zhipu_api_key"] = ""
 zhipu_api_key = st.sidebar.text_input(
     "智谱AI API Key",
-    value=st.session_state["zhipu_api_key"],
-    type="password" if not st.session_state["show_zhipu_key"] else "default",
+    value=st.session_state.get("zhipu_api_key", ""),  # 使用 get() 方法
+    type="password" if not st.session_state.get("show_zhipu_key", False) else "default",
     placeholder="请输入智谱API Key"
 )
-show_zhipu_key = st.sidebar.checkbox("显示智谱API Key", value=st.session_state["show_zhipu_key"])
+show_zhipu_key = st.sidebar.checkbox("显示智谱API Key", value=st.session_state.get("show_zhipu_key", False))
 st.session_state["show_zhipu_key"] = show_zhipu_key
 st.session_state["zhipu_api_key"] = zhipu_api_key
 os.environ["ZHIPUAI_API_KEY"] = zhipu_api_key if zhipu_api_key else ""
 
 # DeepSeek API Key输入（支持明文/密文切换）
-if "show_key" not in st.session_state:
-    st.session_state["show_key"] = False
-if "deepseek_api_key" not in st.session_state:
-    st.session_state["deepseek_api_key"] = ""
 deepseek_api_key = st.sidebar.text_input(
     "DeepSeek API Key",
-    value=st.session_state["deepseek_api_key"],
-    type="password" if not st.session_state["show_key"] else "default",
+    value=st.session_state.get("deepseek_api_key", ""),  # 使用 get() 方法
+    type="password" if not st.session_state.get("show_key", False) else "default",
     placeholder="请输入DeepSeek API Key"
 )
-show_key = st.sidebar.checkbox("显示DeepSeek API Key", value=st.session_state["show_key"])
+show_key = st.sidebar.checkbox("显示DeepSeek API Key", value=st.session_state.get("show_key", False))
 st.session_state["show_key"] = show_key
 st.session_state["deepseek_api_key"] = deepseek_api_key
 os.environ["DEEPSEEK_API_KEY"] = deepseek_api_key if deepseek_api_key else ""
