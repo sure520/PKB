@@ -26,3 +26,6 @@ ENV/
 # 系统文件
 .DS_Store
 Thumbs.db
+
+#cursor规则文件
+.cursor/
