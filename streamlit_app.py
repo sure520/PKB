@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import sys
 from dotenv import load_dotenv
+import uuid
 
 # 设置页面配置 - 必须是第一个Streamlit命令
 st.set_page_config(
@@ -90,16 +91,29 @@ if uploaded_files:
                         # 处理所有上传的文件
                         all_documents = []
                         for uploaded_file in uploaded_files:
-                        # 保存上传的文件
-                            temp_file_path = os.path.join(os.getcwd(), "temp_data", uploaded_file.name)
+                            # 为上传文件生成一个安全的文件名，保留原始扩展名
+                            file_extension = os.path.splitext(uploaded_file.name)[1]
+                            safe_filename = f"{uuid.uuid4()}{file_extension}"
+                            
+                            # 保存上传的文件
+                            temp_file_path = os.path.join(os.getcwd(), "temp_data", safe_filename)
                             os.makedirs(os.path.dirname(temp_file_path), exist_ok=True)
                         
                             with open(temp_file_path, "wb") as f:
                                 f.write(uploaded_file.getbuffer())
                         
-                        # 处理文件
+                            # 处理文件
                             documents = st.session_state.doc_processor.load_document(temp_file_path)
                             documents = st.session_state.doc_processor.split_documents(documents)
+                            
+                            # 为每个文档片段添加原始文件名到元数据
+                            for doc in documents:
+                                if not hasattr(doc, 'metadata'):
+                                    doc.metadata = {}
+                                doc.metadata['source_file'] = uploaded_file.name
+                                doc.metadata['file_size'] = len(uploaded_file.getbuffer())
+                                doc.metadata['file_type'] = file_extension.lstrip('.')
+                            
                             all_documents.extend(documents)
                     
                         if all_documents:
@@ -286,6 +300,7 @@ try:
                     "请使用检索到的上下文片段回答这个问题。 "
                     "如果你不知道答案就说不知道。 "
                     "请使用简洁的话语回答用户。"
+                    "在回答时，如果引用了特定文档，请说明文档来源。"
                     "\n\n上下文: {context}"
                     "\n\n聊天记录: {chat_history}"
                 )
