@@ -69,37 +69,38 @@ uploaded_files = st.sidebar.file_uploader(
 # 处理文档上传
 if uploaded_files:
     if not st.session_state.documents_loaded:
-        with st.sidebar.spinner("处理上传文件..."):
-            try:
-                # 确保应用初始化完成
-                if not st.session_state.app_initialized:
-                    st.sidebar.error("请先输入API密钥并等待应用初始化完成")
-                else:
-                    # 处理所有上传的文件
-                    all_documents = []
-                    for uploaded_file in uploaded_files:
+        with st.sidebar:
+            with st.spinner("处理上传文件..."):
+                try:
+                    # 确保应用初始化完成
+                    if not st.session_state.app_initialized:
+                        st.error("请先输入API密钥并等待应用初始化完成")
+                    else:
+                        # 处理所有上传的文件
+                        all_documents = []
+                        for uploaded_file in uploaded_files:
                         # 保存上传的文件
-                        temp_file_path = os.path.join(os.getcwd(), "temp_data", uploaded_file.name)
-                        os.makedirs(os.path.dirname(temp_file_path), exist_ok=True)
+                            temp_file_path = os.path.join(os.getcwd(), "temp_data", uploaded_file.name)
+                            os.makedirs(os.path.dirname(temp_file_path), exist_ok=True)
                         
-                        with open(temp_file_path, "wb") as f:
-                            f.write(uploaded_file.getbuffer())
+                            with open(temp_file_path, "wb") as f:
+                                f.write(uploaded_file.getbuffer())
                         
                         # 处理文件
-                        documents = st.session_state.doc_processor.load_document(temp_file_path)
-                        documents = st.session_state.doc_processor.split_documents(documents)
-                        all_documents.extend(documents)
+                            documents = st.session_state.doc_processor.load_document(temp_file_path)
+                            documents = st.session_state.doc_processor.split_documents(documents)
+                            all_documents.extend(documents)
                     
-                    if all_documents:
-                        # 添加到向量库
-                        st.session_state.vector_store.create_from_documents(all_documents)
-                        st.session_state.documents = all_documents
-                        st.session_state.documents_loaded = True
-                        st.sidebar.success(f"✅ 成功处理文件，加载了 {len(all_documents)} 个文档片段")
-                    else:
-                        st.sidebar.warning("⚠️ 未能从文件中提取文档")
-            except Exception as e:
-                st.sidebar.error(f"❌ 处理上传文件时出错: {str(e)}")
+                        if all_documents:
+                            # 添加到向量库
+                            st.session_state.vector_store.create_from_documents(all_documents)
+                            st.session_state.documents = all_documents
+                            st.session_state.documents_loaded = True
+                            st.success(f"✅ 成功处理文件，加载了 {len(all_documents)} 个文档片段")
+                        else:
+                            st.warning("⚠️ 未能从文件中提取文档")
+                except Exception as e:
+                    st.error(f"❌ 处理上传文件时出错: {str(e)}")
     else:
         st.sidebar.success(f"✅ 已加载 {len(st.session_state.documents)} 个文档片段")
 
