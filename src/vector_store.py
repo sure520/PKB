@@ -1,3 +1,11 @@
+# 在所有导入之前，强制使用 pysqlite3
+try:
+    __import__('pysqlite3')
+    import sys
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass  # 如果没有安装 pysqlite3-binary，则正常回退
+
 from typing import List, Dict, Any, Optional, Tuple
 from langchain_core.documents import Document
 from langchain_community.vectorstores import Chroma
