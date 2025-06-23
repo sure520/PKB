@@ -4,6 +4,8 @@ import sys
 from dotenv import load_dotenv
 import uuid
 
+print("当前Python解释器路径:", sys.executable)
+
 # 设置页面配置 - 必须是第一个Streamlit命令
 st.set_page_config(
     page_title="LangChain: Chat with search",
@@ -23,9 +25,9 @@ def initialize_session_state():
         "app_initialized": False,
         "initialization_error": None,
         "show_zhipu_key": False,
-        "zhipu_api_key": "",
+        "zhipu_api_key": "cf960b302dd348dbbbca70eb56f4b33a.U0yYyN3VpaMOnski",
         "show_key": False,
-        "deepseek_api_key": "",
+        "deepseek_api_key": "sk-a503ba45a18d443cbf832af515ae896e",
         "documents": [],
         "embedding": None,
         "doc_processor": None,
@@ -91,21 +93,17 @@ if uploaded_files:
                         # 处理所有上传的文件
                         all_documents = []
                         for uploaded_file in uploaded_files:
-                            # 为上传文件生成一个安全的文件名，保留原始扩展名
+                            # 为上传文件生成一个安全的ASCII文件名，保留原始扩展名
                             file_extension = os.path.splitext(uploaded_file.name)[1]
-                            safe_filename = f"{uuid.uuid4()}{file_extension}"
-                            
-                            # 保存上传的文件
+                            safe_filename = f"file_{uuid.uuid4().hex}{file_extension}"
+                            # 保存上传的文件（只用safe_filename，避免任何非ASCII字符）
                             temp_file_path = os.path.join(os.getcwd(), "temp_data", safe_filename)
                             os.makedirs(os.path.dirname(temp_file_path), exist_ok=True)
-                        
                             with open(temp_file_path, "wb") as f:
                                 f.write(uploaded_file.getbuffer())
-                        
                             # 处理文件
                             documents = st.session_state.doc_processor.load_document(temp_file_path)
                             documents = st.session_state.doc_processor.split_documents(documents)
-                            
                             # 为每个文档片段添加原始文件名到元数据
                             for doc in documents:
                                 if not hasattr(doc, 'metadata'):
@@ -113,7 +111,7 @@ if uploaded_files:
                                 doc.metadata['source_file'] = uploaded_file.name
                                 doc.metadata['file_size'] = len(uploaded_file.getbuffer())
                                 doc.metadata['file_type'] = file_extension.lstrip('.')
-                            
+                                doc.metadata['saved_filename'] = safe_filename
                             all_documents.extend(documents)
                     
                         if all_documents:
@@ -297,7 +295,8 @@ try:
                 # 回答生成模板
                 system_prompt = (
                     "你是一个基于知识库的问答助手。 "
-                    "请使用检索到的上下文片段回答这个问题。 "
+                    "请使用检索到的上下文片段回答这个问题，如果用户的输入包含‘全文’等有关内容，\
+                        那么你需要结合具体文档的全文内容进行回答。 "
                     "如果你不知道答案就说不知道。 "
                     "请使用简洁的话语回答用户。"
                     "在回答时，如果引用了特定文档，请说明文档来源。"

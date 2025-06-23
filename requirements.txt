@@ -14,7 +14,7 @@ zhipuai==2.1.5.20250106
 pandas==2.1.4
 
 # 文档处理
-pymupdf==1.23.8
+pymupdf==1.26.1
 unstructured==0.11.2
 python-magic==0.4.27
 pypdf==4.1.0

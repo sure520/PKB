@@ -1,7 +1,7 @@
 import os
 from typing import Any, Dict, List, Optional
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import BaseMessage, AIMessage
+from langchain_core.messages import BaseMessage, AIMessage, AIMessageChunk
 from langchain_core.outputs import ChatGenerationChunk, ChatResult
 from pydantic import Field
 import requests
@@ -105,7 +105,7 @@ class DeepSeekChat(BaseChatModel):
             return ChatResult(
                 generations=[
                     ChatGenerationChunk(
-                        message=AIMessage(content=message["content"]),
+                        message=AIMessageChunk(content=message["content"]),
                         text=message["content"]
                     )
                 ]
@@ -145,7 +145,7 @@ class DeepSeekChat(BaseChatModel):
         return ChatResult(
             generations=[
                 ChatGenerationChunk(
-                    message=AIMessage(content=response_text),
+                    message=AIMessageChunk(content=response_text, response_metadata={}),
                     text=response_text
                 )
             ]
@@ -159,7 +159,7 @@ class DeepSeekChat(BaseChatModel):
         return ChatResult(
             generations=[
                 ChatGenerationChunk(
-                    message=AIMessage(content=response_text),
+                    message=AIMessageChunk(content=response_text, response_metadata={}),
                     text=response_text
                 )
             ]

@@ -1,0 +1,8 @@
+# 自动处理文本文件
+* text=auto
+
+# 强制Python文件使用LF
+*.py text eol=lf
+
+# 强制Markdown文件使用LF
+*.md text eol=lf

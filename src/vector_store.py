@@ -41,7 +41,6 @@ class VectorStore:
                 embedding=self.embedding,
                 persist_directory=self.persist_directory
             )
-            self.vectordb.persist()
         else:
             self.vectordb = Chroma.from_documents(
                 documents=documents,
@@ -54,8 +53,6 @@ class VectorStore:
             self.create_from_documents(documents)
         else:
             self.vectordb.add_documents(documents)
-            if self.persist_directory:
-                self.vectordb.persist()
     
     def load_existing(self):
         """加载已存在的向量数据库"""
@@ -87,6 +84,5 @@ class VectorStore:
         return self.vectordb._collection.count()
         
     def persist(self):
-        """持久化向量数据库"""
-        if self.vectordb and self.persist_directory:
-            self.vectordb.persist() 
+        """兼容旧接口，实际不需要手动持久化"""
+        pass 
