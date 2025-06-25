@@ -29,3 +29,7 @@ Thumbs.db
 
 #cursor规则文件
 .cursor/
+
+# 测试文件test.py test2.py
+test.py
+test2.py
